@@ -37,7 +37,7 @@ class Color:
     VIRTUAL_ENV_BG = 35  # a mid-tone green
     VIRTUAL_ENV_FG = 00
 
-    RVM_ENV_BG = 32  # a mid-tone green
+    RVM_ENV_BG = 32  # a mid-tone blue
     RVM_ENV_FG = 00
 
 
