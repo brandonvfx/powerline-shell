@@ -37,6 +37,9 @@ class Color:
     VIRTUAL_ENV_BG = 35  # a mid-tone green
     VIRTUAL_ENV_FG = 00
 
+    RVM_ENV_BG = 32  # a mid-tone green
+    RVM_ENV_FG = 00
+
 
 class Powerline:
     symbols = {
@@ -288,6 +291,30 @@ def add_virtual_env_segment(powerline, cwd):
     powerline.append(Segment(powerline, ' %s ' % env_name, fg, bg))
     return True
 
+def add_rvm_segment(powerline, cwd):
+    if os.getenv('POWERLINES_SHELL_HIDE_RVM', False):
+        return False
+
+    env_name = None
+    try:
+        p1 = subprocess.Popen(['rvm-prompt'], stdout=subprocess.PIPE,
+             stderr=subprocess.PIPE, env=os.environ)
+        output = p1.communicate()[0].strip()
+    except subprocess.CalledProcessError:
+        return False
+    except OSError:
+        return False
+    
+    if len(output) > 0:
+        env_name = output
+
+    if env_name is None:
+        return False
+
+    bg = Color.RVM_ENV_BG
+    fg = Color.RVM_ENV_FG
+    powerline.append(Segment(powerline, ' %s ' % env_name, fg, bg))
+    return True
 
 def add_root_indicator(powerline, error):
     bg = Color.CMD_PASSED_BG
@@ -333,6 +360,7 @@ if __name__ == '__main__':
     p = Powerline(mode=args.mode, shell=args.shell)
     cwd = get_valid_cwd()
     add_virtual_env_segment(p, cwd)
+    add_rvm_segment(p, cwd)
     #p.append(Segment(p, ' \\u ', 250, 240))
     #p.append(Segment(p, ' \\h ', 250, 238))
     add_cwd_segment(p, cwd, 5, args.cwd_only)
